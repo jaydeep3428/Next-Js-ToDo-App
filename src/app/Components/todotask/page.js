@@ -9,13 +9,12 @@ export default function Home() {
   const [tasks, setTasks] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentTaskIndex, setCurrentTaskIndex] = useState(null);
-  console.log(BASE_API_URL, "-------------------------------------")
 
   // Fetch tasks from server on component mount
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch(BASE_API_URL+"/api/tasklists");
+        const response = await fetch(`${BASE_API_URL}/api/tasklists`);
         const data = await response.json();
         if (data.success) {
           setTasks(
