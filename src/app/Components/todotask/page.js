@@ -9,12 +9,13 @@ export default function Home() {
   const [tasks, setTasks] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentTaskIndex, setCurrentTaskIndex] = useState(null);
+  console.log(BASE_API_URL, "-------------------------------------")
 
   // Fetch tasks from server on component mount
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch(+BASE_API_URL + "/api/tasklists");
+        const response = await fetch(BASE_API_URL+"/api/tasklists");
         const data = await response.json();
         if (data.success) {
           setTasks(
@@ -34,8 +35,8 @@ export default function Home() {
 
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
-      ? +BASE_API_URL + `/api/tasklists/${tasks[currentTaskIndex]._id}`
-      : +BASE_API_URL + "/api/tasklists";
+      ? `${BASE_API_URL}/api/tasklists/${tasks[currentTaskIndex]._id}`
+      : `${BASE_API_URL}/api/tasklists`;
 
     const body = JSON.stringify({ taskname });
 
@@ -78,7 +79,7 @@ export default function Home() {
     const taskId = tasks[index]._id;
 
     try {
-      const response = await fetch(+BASE_API_URL + `/api/tasklists/${taskId}`, {
+      const response = await fetch(`${BASE_API_URL}/api/tasklists/${taskId}`, {
         method: "DELETE",
       });
 
