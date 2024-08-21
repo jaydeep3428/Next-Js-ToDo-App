@@ -13,9 +13,7 @@ export default function Home() {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/tasklists`
-        );
+        const response = await fetch("/api/tasklists");
         const data = await response.json();
         if (data.success) {
           setTasks(
