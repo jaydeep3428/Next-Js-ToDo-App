@@ -9,7 +9,7 @@ export default function Home() {
   const [isEditing, setIsEditing] = useState(false);
   const [currentTaskIndex, setCurrentTaskIndex] = useState(null);
 
-  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
   // Fetch tasks from server on component mount
   useEffect(() => {
     const fetchTasks = async () => {
