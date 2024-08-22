@@ -15,7 +15,7 @@ export default function Home() {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/tasklists`);
+        const response = await fetch(`/api/tasklists`);
         const data = await response.json();
         if (data.success) {
           setTasks(
@@ -31,15 +31,15 @@ export default function Home() {
     };
 
     fetchTasks();
-  }, [BASE_URL]);
+  }, []);
 
   const addOrUpdateTask = async () => {
     if (taskname.trim() === "") return; // Avoid adding empty tasks
 
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
-      ? `${BASE_URL}/api/tasklists/${tasks[currentTaskIndex]._id}`
-      : `${BASE_URL}/api/tasklists`;
+      ? `/api/tasklists/${tasks[currentTaskIndex]._id}`
+      : `/api/tasklists`;
 
     const body = JSON.stringify({ taskname });
 
@@ -87,7 +87,7 @@ export default function Home() {
     const taskId = tasks[index]._id;
 
     try {
-      const response = await fetch(`${BASE_URL}/api/tasklists/${taskId}`, {
+      const response = await fetch(`/api/tasklists/${taskId}`, {
         method: "DELETE",
       });
 
