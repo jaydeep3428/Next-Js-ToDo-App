@@ -11,11 +11,12 @@ export default function Home() {
   const [currentTaskIndex, setCurrentTaskIndex] = useState(null);
 
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+  // console.log(BASE_URL, "base url")
   // Fetch tasks from server on component mount
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch(`/api/tasklists`);
+        const response = await fetch(`${BASE_URL}/api/tasklists`);
         const data = await response.json();
         if (data.success) {
           setTasks(
@@ -31,15 +32,15 @@ export default function Home() {
     };
 
     fetchTasks();
-  }, []);
+  }, [BASE_URL]);
 
   const addOrUpdateTask = async () => {
     if (taskname.trim() === "") return; // Avoid adding empty tasks
 
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
-      ? `/api/tasklists/${tasks[currentTaskIndex]._id}`
-      : `/api/tasklists`;
+      ? `${BASE_URL}/api/tasklists/${tasks[currentTaskIndex]._id}`
+      : `${BASE_URL}/api/tasklists`;
 
     const body = JSON.stringify({ taskname });
 
@@ -87,7 +88,7 @@ export default function Home() {
     const taskId = tasks[index]._id;
 
     try {
-      const response = await fetch(`/api/tasklists/${taskId}`, {
+      const response = await fetch(`${BASE_URL}/api/tasklists/${taskId}`, {
         method: "DELETE",
       });
 
