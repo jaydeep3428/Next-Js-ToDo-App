@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@nextui-org/react";
 import { Input } from "@nextui-org/react";
+import { toast, Toaster } from "sonner";
 
 export default function Home() {
   const [taskname, setTaskName] = useState("");
@@ -51,7 +52,12 @@ export default function Home() {
 
       const data = await response.json();
       if (data.success) {
-        alert(isEditing ? "Task Updated." : "New Task Added.");
+        if (isEditing == true) {
+          toast.success("Task Updated.");
+        } else {
+          toast.success("New Task Added.");
+        }
+        // toast.success(isEditing ? "Task Updated." : "New Task Added.");
 
         if (isEditing) {
           const updatedTasks = tasks.map((t, index) =>
@@ -88,7 +94,7 @@ export default function Home() {
       const data = await response.json();
       if (data.success) {
         setTasks(tasks.filter((_, i) => i !== index));
-        alert("Task Deleted.");
+        toast.error("Task Deleted.");
       }
     } catch (error) {
       console.error("Failed to delete task:", error);
@@ -97,6 +103,7 @@ export default function Home() {
 
   return (
     <div>
+      <Toaster position="top-right" richColors />
       <div className="min-h-screen flex items-center justify-center">
         <div className=" p-8 rounded shadow-xl w-full max-w-md">
           <h1 className="text-2xl font-bold mb-4">To-Do List</h1>
