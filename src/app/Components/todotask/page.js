@@ -1,6 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Button } from "@nextui-org/react";
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  useDisclosure,
+} from "@nextui-org/react";
 import { Input } from "@nextui-org/react";
 import { toast, Toaster } from "sonner";
 
@@ -9,9 +16,10 @@ export default function Home() {
   const [tasks, setTasks] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentTaskIndex, setCurrentTaskIndex] = useState(null);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-  // console.log(BASE_URL, "base url")
+
   // Fetch tasks from server on component mount
   useEffect(() => {
     const fetchTasks = async () => {
@@ -19,8 +27,11 @@ export default function Home() {
         const response = await fetch(`${BASE_URL}/api/tasklists`);
         const data = await response.json();
         if (data.success) {
+          const sortedTasks = data.result.sort((a, b) =>
+            b._id.localeCompare(a._id)
+          );
           setTasks(
-            data.result.map((task) => ({
+            sortedTasks.map((task) => ({
               _id: task._id,
               task: task.taskname,
             }))
@@ -35,7 +46,10 @@ export default function Home() {
   }, [BASE_URL]);
 
   const addOrUpdateTask = async () => {
-    if (taskname.trim() === "") return; // Avoid adding empty tasks
+    if (taskname.trim() === "") {
+      toast.error("Task name cannot be empty.");
+      return;
+    }
 
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
@@ -53,14 +67,8 @@ export default function Home() {
 
       const data = await response.json();
       if (data.success) {
-        if (isEditing == true) {
-          toast.success("Task Updated.");
-        } else {
-          toast.success("New Task Added.");
-        }
-        // toast.success(isEditing ? "Task Updated." : "New Task Added.");
-
         if (isEditing) {
+          toast.success("Task Updated.");
           const updatedTasks = tasks.map((t, index) =>
             index === currentTaskIndex ? { ...t, task: taskname } : t
           );
@@ -68,7 +76,12 @@ export default function Home() {
           setIsEditing(false);
           setCurrentTaskIndex(null);
         } else {
-          setTasks([...tasks, { task: taskname, _id: data.result._id }]);
+          toast.success("New Task Added.");
+          const newTask = {
+            task: taskname,
+            _id: data.result._id,
+          };
+          setTasks([newTask, ...tasks]); // Add the new task at the top
         }
 
         setTaskName(""); // Clear the input field
@@ -106,7 +119,7 @@ export default function Home() {
     <div>
       <Toaster position="top-right" richColors />
       <div className="min-h-screen flex items-center justify-center">
-        <div className=" p-8 rounded shadow-xl w-full max-w-md">
+        <div className="p-8 rounded shadow-xl w-full max-w-md">
           <h1 className="text-2xl font-bold mb-4">To-Do List</h1>
 
           <div className="flex w-full flex-wrap md:flex-nowrap gap-4 mb-4">
@@ -137,9 +150,40 @@ export default function Home() {
                   >
                     Edit
                   </Button>
-                  <Button onClick={() => removeTask(index)} color="danger">
+                  <Button onPress={onOpen} color="danger">
                     Delete
                   </Button>
+                  <Modal
+                    isOpen={isOpen}
+                    onOpenChange={onOpenChange}
+                    isDismissable={false}
+                    isKeyboardDismissDisabled={true}
+                  >
+                    <ModalContent>
+                      {(onClose) => (
+                        <>
+                          <ModalHeader className="flex flex-col gap-1">
+                            ARE YOU SURE TO DELETE.
+                          </ModalHeader>
+                          <ModalFooter>
+                            <Button
+                              color="primary"
+                              variant="light"
+                              onPress={onClose}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              color="danger"
+                              onClick={() => removeTask(index)}
+                            >
+                              Delete
+                            </Button>
+                          </ModalFooter>
+                        </>
+                      )}
+                    </ModalContent>
+                  </Modal>
                 </div>
               </li>
             ))}
